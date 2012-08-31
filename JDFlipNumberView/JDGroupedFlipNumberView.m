@@ -7,6 +7,17 @@
 
 #import "JDGroupedFlipNumberView.h"
 
+@implementation JDFlipNumberView (GroupedFlipNumberView)
+- (NSUInteger) validValueFromInt: (NSInteger) index
+{
+    if ([self.delegate conformsToProtocol: @protocol(JDFlipNumberViewDelegateForGroupedFlipNumberView)]) {
+        id<JDFlipNumberViewDelegateForGroupedFlipNumberView> castedDelegate = (id<JDFlipNumberViewDelegateForGroupedFlipNumberView>)self.delegate;
+        return [castedDelegate validValueForFlipNumberView:self withValue:index];
+    }
+    return index % 10;
+}
+@end
+
 
 @implementation JDGroupedFlipNumberView
 
@@ -83,6 +94,7 @@
         view.intValue = 0;
     }
     
+    newValue = MIN(newValue, self.maximumValue);
 	NSString* stringValue = [NSString stringWithFormat: @"%d", newValue];
 	
 	for (int i = 0; i < [stringValue length] && i < [mFlipNumberViews count]; i++)
@@ -248,7 +260,7 @@
 - (void) flipNumberView: (JDFlipNumberView*) flipNumberView willChangeToValue: (NSUInteger) newValue
 {
     BOOL upwardsEnded   = newValue == 0 && flipNumberView.currentDirection == eFlipDirectionUp;
-    BOOL downwardsEnded = newValue == flipNumberView.maxValue && flipNumberView.currentDirection == eFlipDirectionDown;
+    BOOL downwardsEnded = flipNumberView.intValue == 0 && flipNumberView.currentDirection == eFlipDirectionDown;
     
 //    LOG(@"newValue: %d", newValue);
     
@@ -298,6 +310,37 @@
 	if ([delegate respondsToSelector: @selector(groupedFlipNumberView:didChangeValue:animated:)]) {
 		[delegate groupedFlipNumberView: self didChangeValue: [self intValue] animated: animated];
 	}
+}
+
+- (NSUInteger)validValueForFlipNumberView:(JDFlipNumberView*)flipNumberView withValue:(NSUInteger)value;
+{
+    NSInteger currentMaximum = 9;
+    NSInteger position = [mFlipNumberViews indexOfObject:flipNumberView];
+    
+    NSString *maxString = [NSString stringWithFormat: @"%d", self.maximumValue];
+    while (maxString.length < mFlipNumberViews.count) {
+        maxString = [NSString stringWithFormat: @"0%@", maxString];
+    }
+    
+    if (position == 0) {
+        currentMaximum = [[maxString substringWithRange:NSMakeRange(0, 1)] intValue];
+    } else {
+        NSString *valueString = [NSString stringWithFormat: @"%d", self.intValue];
+        while (valueString.length < mFlipNumberViews.count) {
+            valueString = [NSString stringWithFormat: @"0%@", valueString];
+        }
+        
+        if ([[valueString substringWithRange:NSMakeRange(position-1, 1)] intValue] ==
+            [[maxString substringWithRange:NSMakeRange(position-1, 1)] intValue]) {
+            currentMaximum = [[maxString substringWithRange:NSMakeRange(position, 1)] intValue];
+        }
+    }
+    
+    if (currentMaximum==0) {
+        return 0;
+    }
+    
+    return value % currentMaximum;
 }
 
 

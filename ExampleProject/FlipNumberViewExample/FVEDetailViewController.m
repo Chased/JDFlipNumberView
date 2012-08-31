@@ -85,6 +85,7 @@
     
     JDDateCountdownFlipView *flipView = [[JDDateCountdownFlipView alloc] initWithTargetDate: date];
     [self.view addSubview: flipView];
+    [flipView setDebugValues];
     
     // add info labels
     NSInteger posx = 20;

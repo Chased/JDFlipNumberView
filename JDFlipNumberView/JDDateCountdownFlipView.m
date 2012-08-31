@@ -80,17 +80,14 @@
 
 - (void) setDebugValues
 {
-    // DEBUG
+    mFlipNumberViewSecond.maximumValue = 12;
     
-    mFlipNumberViewHour.maximumValue = 2;
-    mFlipNumberViewMinute.maximumValue = 2;
-    mFlipNumberViewSecond.maximumValue = 4;
-    
-    mFlipNumberViewHour.intValue = 2;
-    mFlipNumberViewMinute.intValue = 2;
-    mFlipNumberViewSecond.intValue = 4;
-    
-    [mFlipNumberViewSecond animateDownWithTimeInterval: 0.5];
+    // countdown to silvester
+    NSDateComponents *currentComps = [[NSCalendar currentCalendar] components:NSYearCalendarUnit fromDate:[NSDate date]];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat: @"dd.MM.yyyy HH:mm"];
+    NSDate *date = [dateFormatter dateFromString: [NSString stringWithFormat: @"01.01.%d 00:00", currentComps.year+1]];
+    [self setTargetDate: date];
 }
 
 #pragma mark -

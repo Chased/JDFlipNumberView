@@ -9,7 +9,12 @@
 
 @protocol JDGroupedFlipNumberViewDelegate;
 
-@interface JDGroupedFlipNumberView : UIView <JDFlipNumberViewDelegate>
+@protocol JDFlipNumberViewDelegateForGroupedFlipNumberView <JDFlipNumberViewDelegate>
+@optional
+- (NSUInteger)validValueForFlipNumberView:(JDFlipNumberView*)flipNumberView withValue:(NSUInteger)value;
+@end
+
+@interface JDGroupedFlipNumberView : UIView <JDFlipNumberViewDelegateForGroupedFlipNumberView>
 {
 	NSArray* mFlipNumberViews;
 	
@@ -58,3 +63,5 @@
 - (void) groupedFlipNumberView: (JDGroupedFlipNumberView*) groupedFlipNumberView willChangeToValue: (NSUInteger) newValue;
 - (void) groupedFlipNumberView: (JDGroupedFlipNumberView*) groupedFlipNumberView didChangeValue: (NSUInteger) newValue animated: (BOOL) animated;
 @end;
+
+
